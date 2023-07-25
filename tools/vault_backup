@@ -1,0 +1,19 @@
+#!/bin/bash
+#
+# Vault backup
+
+# variables
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+VAULT_ROOT_REGEX="(hvs\.[a-zA-Z0-9]{24})"
+VAULT_CREDS=$(cat ${SCRIPT_DIR}/../configs/vault.txt)
+
+[[ ${VAULT_CREDS} =~ ${VAULT_ROOT_REGEX} ]]
+
+echo ${BASH_REMATCH[0]}
+
+export VAULT_ADDR=http://172.16.20.11:8200
+
+VAULT_ADDR=http://172.16.20.11:8200 vault login ${BASH_REMATCH[0]}
+VAULT_ADDR=http://172.16.20.11:8200 vault operator raft snapshot save backup.snap

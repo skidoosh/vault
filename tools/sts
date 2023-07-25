@@ -1,0 +1,17 @@
+#!/bin/bash
+#
+# Vault sts session generation helper
+
+# variables
+SCRIPT=$(realpath "$0")
+SCRIPTPATH=$(dirname "$SCRIPT")
+
+OUT=$(${SCRIPTPATH}/vault write -f -format=json aws/sts/admin)
+
+AWS_ACCESS_KEY_ID=$(echo ${OUT} | jq -r '.data.access_key')
+AWS_SECRET_ACCESS_KEY=$(echo ${OUT} | jq -r .data.secret_key)
+AWS_SESSION_TOKEN=$(echo ${OUT} | jq -r .data.security_token)
+
+printf "export AWS_ACCESS_KEY_ID=\"%s\"\\n" $AWS_ACCESS_KEY_ID;\
+printf "export AWS_SECRET_ACCESS_KEY=\"%s\"\\n" $AWS_SECRET_ACCESS_KEY;\
+printf "export AWS_SESSION_TOKEN=\"%s\"\\n\\n\\n" $AWS_SESSION_TOKEN;
